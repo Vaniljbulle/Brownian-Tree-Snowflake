@@ -68,31 +68,6 @@
     };
     window.onerror = function () {
     };
-
-    function keyDownEvent(e) {
-        var code = e.keyCode;
-
-        var keyXMove = 0;
-        var keyYMove = 0;
-
-        if (code === 39) // right
-        {
-            keyXMove = 1;
-        } else if (code === 37) // left
-        {
-            keyXMove = -1;
-        } else if (code === 38) // up
-        {
-            keyYMove = -1;
-        } else if (code === 40) // down
-        {
-            keyYMove = 1;
-        }
-
-        //Module._setKeyMove(keyXMove, keyYMove);
-    }
-
-    window.addEventListener('keydown', keyDownEvent);
 </script>
 {{{ SCRIPT }}}
 </body>
