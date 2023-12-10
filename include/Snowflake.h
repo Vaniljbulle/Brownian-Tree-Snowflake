@@ -14,13 +14,19 @@ class Snowflake {
     std::mt19937 gen{std::random_device{}()};
     std::uniform_int_distribution<> dis{};
 
-    void addParticle(const SnowflakeParticle &particle);
+    void addParticle(const SnowflakeParticle &particle){
+        particles.insert(particle);
+    }
 
     bool isParticleColliding(const SnowflakeParticle &particle);
 
-    bool isParticleAtCenter(const SnowflakeParticle &particle) const;
+    bool isParticleAtCenter(const SnowflakeParticle &particle) const {
+        return particle.x <= centerX;
+    }
 
-    bool isParticleAtEdge(const SnowflakeParticle &particle);
+    bool isParticleAtEdge(const SnowflakeParticle &particle) {
+        return particle.x >= width - particle.radius;
+    }
 
     void moveParticle(SnowflakeParticle &particle);
 
@@ -33,7 +39,12 @@ public:
         dis = std::uniform_int_distribution<>{-5, 5};
     };
 
-    void update(int radius);
+    bool update(int radius);
+
+    void reset() {
+        particles.clear();
+        finished = false;
+    }
 
     std::unordered_set<SnowflakeParticle>& getParticles() { return particles; }
 };

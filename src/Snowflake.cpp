@@ -1,15 +1,12 @@
 #include "../include/Snowflake.h"
 
-void Snowflake::update(int radius) {
-    if (finished) return;
+bool Snowflake::update(int radius) {
+    if (finished) return false;
 
     auto particle = SnowflakeParticle(width - radius, centerY, radius);
     moveParticle(particle);
     addParticle(particle);
-}
-
-void Snowflake::addParticle(const SnowflakeParticle &particle) {
-    particles.insert(particle);
+    return true;
 }
 
 bool Snowflake::isParticleColliding(const SnowflakeParticle &particle) {
@@ -23,10 +20,6 @@ bool Snowflake::isParticleColliding(const SnowflakeParticle &particle) {
         }
     }
     return false;
-}
-
-bool Snowflake::isParticleAtCenter(const SnowflakeParticle &particle) const {
-    return particle.x <= centerX;
 }
 
 void Snowflake::moveParticle(SnowflakeParticle &particle) {
@@ -45,9 +38,4 @@ void Snowflake::moveParticle(SnowflakeParticle &particle) {
     if (isParticleAtEdge(particle)) {
         finished = true;
     }
-}
-
-
-bool Snowflake::isParticleAtEdge(const SnowflakeParticle &particle) {
-    return particle.x >= width - particle.radius;
 }
