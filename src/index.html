@@ -40,13 +40,13 @@
     </div>
 </div>
 <script type='text/javascript'>
-    var Module = {
+    let Module = {
         preRun: [],
         postRun: [function() {
             document.getElementById('loadingOverlay').style.display = 'none';
         }],
         canvas: (function () {
-            var canvas = document.getElementById('canvas');
+            let canvas = document.getElementById('canvas');
 
             // As a default initial behavior, pop up an alert when webgl context is lost. To make your
             // application robust, you may want to override this behavior before shipping!
@@ -68,6 +68,13 @@
     };
     window.onerror = function () {
     };
+
+    function keyDownEvent(e) {
+        let code = e.keyCode;
+        Module._keyboardInput(code);
+    }
+
+    window.addEventListener('keydown', keyDownEvent);
 </script>
 {{{ SCRIPT }}}
 </body>

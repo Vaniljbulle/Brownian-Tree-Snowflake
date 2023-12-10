@@ -78,9 +78,21 @@ void loop() {
         }
     }
 
-
-    snowflakeLogic.update(PARTICLE_RADIUS);
+    if (!snowflakeLogic.update(PARTICLE_RADIUS)) {
+        emscripten_pause_main_loop();
+    }
     draw();
+}
+
+
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
+void keyboardInput(int keycode) {
+    if (keycode == 82) {
+        snowflakeLogic.reset();
+        emscripten_resume_main_loop();
+    }
+}
 }
 
 int main() {
