@@ -9,7 +9,7 @@
 #define WINDOW_HEIGHT 800
 #define PARTICLES_PER_FRAME 1
 #define PARTICLE_RADIUS 2
-#define SEGMENTS 3
+#define SEGMENTS 12
 
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;
