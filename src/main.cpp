@@ -16,15 +16,21 @@ SDL_Renderer *renderer = nullptr;
 Snowflake snowflakeLogic = Snowflake(WINDOW_WIDTH, WINDOW_HEIGHT, SEGMENTS);
 
 void drawFilledCircle(int centerX, int centerY, int radius) {
-    for (int w = 0; w < radius * 2; w++) {
-        for (int h = 0; h < radius * 2; h++) {
-            int dx = radius - w;
-            int dy = radius - h;
-            if ((dx*dx + dy*dy) <= (radius * radius)) {
-                SDL_RenderDrawPoint(renderer, centerX + dx, centerY + dy);
-            }
-        }
-    }
+    int outerRadius = radius + 1;
+    int radiusSquared = radius * radius;
+    int outerRadiusSquared = outerRadius * outerRadius;
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 120);
+    for (int w = -outerRadius; w <= outerRadius; w++)
+        for (int h = -outerRadius; h <= outerRadius; h++)
+            if (w * w + h * h >= radiusSquared && w * w + h * h < outerRadiusSquared)
+                SDL_RenderDrawPoint(renderer, centerX + w, centerY + h);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    for (int w = -radius; w <= radius; w++)
+        for (int h = -radius; h <= radius; h++)
+            if (w * w + h * h <= radiusSquared)
+                SDL_RenderDrawPoint(renderer, centerX + w, centerY + h);
 }
 
 void rotatePoint(int cx, int cy, int angle, int &x, int &y) {
@@ -43,11 +49,11 @@ void rotatePoint(int cx, int cy, int angle, int &x, int &y) {
 }
 
 void draw() {
-    SDL_Texture *screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 800,
-                                                   800);
+    SDL_Texture *screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH,
+                                                   WINDOW_HEIGHT);
     SDL_SetRenderTarget(renderer, screenTexture);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     for (int i = 0; i < SEGMENTS; i++) {
@@ -56,6 +62,8 @@ void draw() {
             int x = particle.x, y = particle.y;
             rotatePoint(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, angle, x, y);
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+//            SDL_RenderDrawPoint(renderer, x, y);
+//            SDL_RenderDrawPoint(renderer, x, WINDOW_HEIGHT - y);
             drawFilledCircle(x, y, particle.radius);
             drawFilledCircle(x, WINDOW_HEIGHT - y, particle.radius);
         }
@@ -97,7 +105,7 @@ void keyboardInput(int keycode) {
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(800, 800, 0, &window, &renderer);
-
+    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     emscripten_set_main_loop(loop, 0, 1);
 }
