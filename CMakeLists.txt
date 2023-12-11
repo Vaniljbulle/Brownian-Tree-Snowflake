@@ -20,7 +20,7 @@ set(EM_FLAGS "")
 #set(EM_FLAGS "${EM_FLAGS} -std=c++17 -fsanitize=address --profiling")
 set(EM_FLAGS "${EM_FLAGS} --shell-file \"../src/index.html\"")
 ##set(EM_FLAGS "${EM_FLAGS} -O0 -g -gsource-map --source-map-base http://localhost:8080/build/")
-set(EM_FLAGS "${EM_FLAGS} -s USE_SDL=2 -s USE_SDL_TTF=2")
+set(EM_FLAGS "${EM_FLAGS} -s USE_SDL=2 -s USE_SDL_TTF=2 -s ALLOW_MEMORY_GROWTH=1")
 #set(EM_FLAGS "${EM_FLAGS} -s DEMANGLE_SUPPORT=1 -s INITIAL_MEMORY=256MB -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=1")
 
 add_executable(BrownianTreeSnowflake
