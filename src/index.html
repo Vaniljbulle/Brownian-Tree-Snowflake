@@ -3,8 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Example</title>
+    <title>Brownian Tree Snowflake Simulation</title>
     <style>
+        body {
+            background-color: black;
+            color: white;
+        }
         .emscripten {
             padding-right: 0;
             margin-left: auto;
@@ -25,37 +29,125 @@
             border: 1px solid transparent;
         }
 
-        /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
         canvas.emscripten {
             border: 0 none;
             background-color: black;
         }
+
+        /* Slider Styles */
+        .slider-wrapper {
+            z-index: 1;
+            position: absolute;
+            top: 50%;
+            left: 40px;
+            transform: translateY(-50%);
+        }
+
+        .slider-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .slider-label {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        #spawn-range, #walk-range {
+            width: 100px;
+        }
+
+        .slider-value {
+            position: absolute;
+            text-align: center;
+            width: 30px;
+            top: 22px;
+        }
+
+        .slider-value.left {
+            left: -35px;
+        }
+
+        .slider-value.right {
+            left: 105px;
+        }
+
+        .ui-slider .ui-slider-handle:nth-of-type(1) {
+            background: #ff7300;
+            height: 10px;
+            top: 10px;
+        }
+
+        .ui-slider .ui-slider-handle:last-child {
+            background: #ff7300;
+            height: 10px;
+        }
+        .slider-value.single {
+            position: absolute;
+            left: -35px;
+            top: 20px;
+        }
+        .restart-instruction {
+            font-size: 20px;
+            color: orange;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
+<div class="slider-wrapper">
+    <div class="restart-instruction">Press 'R' to restart</div>
+    <div class="slider-container">
+        <div class="slider-label">Spawn Range</div>
+        <div id="spawn-range"></div>
+        <div class="slider-value left">-5</div>
+        <div class="slider-value right">5</div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-label">Walk range (y)</div>
+        <div id="walk-range"></div>
+        <div class="slider-value left">-5</div>
+        <div class="slider-value right">5</div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-label">Segments</div>
+        <div id="segments"></div>
+        <div class="slider-value single">0</div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-label">Particles/Frame</div>
+        <div id="particlesPerFrame"></div>
+        <div class="slider-value single">0</div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-label">Particle Radius</div>
+        <div id="particleRadius"></div>
+        <div class="slider-value single">0</div>
+    </div>
+</div>
 <div class="emscripten_border" style="position: relative;">
     <canvas class="emscripten" height="800" width="800" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0); color: white; display: flex; align-items: center; justify-content: center; font-size: 30px;">
         Loading...
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script type='text/javascript'>
-    let Module = {
+    var Module = {
         preRun: [],
         postRun: [function() {
             document.getElementById('loadingOverlay').style.display = 'none';
         }],
         canvas: (function () {
             let canvas = document.getElementById('canvas');
-
-            // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-            // application robust, you may want to override this behavior before shipping!
-            // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
             canvas.addEventListener("webglcontextlost", function (e) {
                 alert('WebGL context lost. You will need to reload the page.');
                 e.preventDefault();
             }, false);
-
             return canvas;
         })(),
         setStatus: function (text) {
@@ -73,8 +165,51 @@
         let code = e.keyCode;
         Module._keyboardInput(code);
     }
-
     window.addEventListener('keydown', keyDownEvent);
+
+    $(function() {
+        function initializeSlider(selector, sliderId, minVal, maxVal, initialValues) {
+            var slider = $(selector);
+            var sliderContainer = slider.parent('.slider-container');
+            var isRangeSlider = initialValues.length === 2;
+            var valueDisplay = isRangeSlider ?
+                { left: sliderContainer.find('.slider-value.left'), right: sliderContainer.find('.slider-value.right') } :
+                { single: sliderContainer.find('.slider-value.single') };
+
+            slider.slider({
+                range: isRangeSlider,
+                min: minVal,
+                max: maxVal,
+                values: isRangeSlider ? initialValues : null,
+                value: isRangeSlider ? null : initialValues[0],
+                slide: function(event, ui) {
+                    if (isRangeSlider) {
+                        valueDisplay.left.text(ui.values[0]);
+                        valueDisplay.right.text(ui.values[1]);
+                        Module._sliderInput(sliderId, ui.values[0], ui.values[1]);
+                    } else {
+                        valueDisplay.single.text(ui.value);
+                        Module._sliderInput(sliderId, 0, ui.value);
+                    }
+                }
+            });
+
+            if (isRangeSlider) {
+                valueDisplay.left.text(initialValues[0]);
+                valueDisplay.right.text(initialValues[1]);
+            } else {
+                valueDisplay.single.text(initialValues[0]);
+            }
+        }
+
+        initializeSlider("#spawn-range", 0, 0, 100, [0, 30]);
+        initializeSlider("#walk-range", 1, -10, 10, [-1, 1]);
+        initializeSlider("#segments", 2, 2, 30, [6]);
+        initializeSlider("#particlesPerFrame", 3, 1, 50, [1]);
+        initializeSlider("#particleRadius", 4, 1, 20, [2]);
+    });
+
+
 </script>
 {{{ SCRIPT }}}
 </body>

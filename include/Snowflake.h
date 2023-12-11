@@ -7,14 +7,15 @@
 
 class Snowflake {
     std::unordered_set<SnowflakeParticle> particles;
-    int width, height, centerX, centerY;
+    int width, height, centerX, centerY, particlesPerFrame, particleRadius;
     double slope;
     bool finished = false;
 
     std::mt19937 gen{std::random_device{}()};
-    std::uniform_int_distribution<> dis{};
+    std::uniform_int_distribution<> yRandomWalkRange{};
+    std::uniform_int_distribution<> randomSpawnRange{};
 
-    void addParticle(const SnowflakeParticle &particle){
+    void addParticle(const SnowflakeParticle &particle) {
         particles.insert(particle);
     }
 
@@ -25,25 +26,45 @@ class Snowflake {
     }
 
     bool isParticleAtEdge(const SnowflakeParticle &particle) {
-        return particle.x >= width - particle.radius;
+        return particle.x >= width - particle.radius * 2;
     }
 
     void moveParticle(SnowflakeParticle &particle);
 
 public:
-    Snowflake(int width, int height, int segments) : width(width), height(height) {
+    Snowflake(int width, int height, int segments, int particleRadius, int particlesPerFrame) : width(width), height(height), particleRadius(particleRadius), particlesPerFrame(particlesPerFrame) {
         centerX = width / 2;
         centerY = height / 2;
-        slope = tan(M_PI/segments);
-
-        dis = std::uniform_int_distribution<>{-5, 5};
+        setSegments(segments);
+        setRandomWalkRange(-1, 1);
+        setSpawnRange(0, 30);
     };
 
-    bool update(int radius);
+    bool update();
 
     void reset() {
         particles.clear();
         finished = false;
+    }
+
+    void setSpawnRange(int min, int max) {
+        randomSpawnRange = std::uniform_int_distribution<>{centerY - max, centerY - min};
+    }
+
+    void setRandomWalkRange(int min, int max) {
+        yRandomWalkRange = std::uniform_int_distribution<>{min, max};
+    }
+
+    void setParticlesPerFrame(int _particlesPerFrame) {
+        particlesPerFrame = _particlesPerFrame;
+    }
+
+    void setParticleRadius(int _particleRadius) {
+        particleRadius = _particleRadius;
+    }
+
+    void setSegments(int segments) {
+        slope = tan(M_PI / segments);
     }
 
     std::unordered_set<SnowflakeParticle>& getParticles() { return particles; }
