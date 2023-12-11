@@ -80,9 +80,6 @@ void draw() {
         for (const auto &particle : snowflakeLogic.getParticles()) {
             int x = particle.x, y = particle.y;
             rotatePoint(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, angle, x, y);
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-//            SDL_RenderDrawPoint(renderer, x, y);
-//            SDL_RenderDrawPoint(renderer, x, WINDOW_HEIGHT - y);
             drawFilledCircle(x, y, particle.radius);
             drawFilledCircle(x, WINDOW_HEIGHT - y, particle.radius);
         }
