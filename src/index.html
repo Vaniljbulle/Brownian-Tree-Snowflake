@@ -9,52 +9,48 @@
             background-color: black;
             color: white;
         }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
         .emscripten {
             padding-right: 0;
-            margin-left: auto;
-            margin-right: auto;
+            margin: auto;
             display: block;
-        }
-
-        textarea.emscripten {
-            font-family: monospace;
-            width: 80%;
-        }
-
-        div.emscripten {
             text-align: center;
-        }
-
-        div.emscripten_border {
-            border: 1px solid transparent;
-        }
-
-        canvas.emscripten {
             border: 0 none;
             background-color: black;
         }
 
-        /* Slider Styles */
+        div.emscripten_border {
+            /*border: 1px solid transparent;*/
+            flex: 4;
+            margin-left: 40px;
+            max-width: 100%;
+            position: relative;
+        }
+
         .slider-wrapper {
             z-index: 1;
-            position: absolute;
-            top: 50%;
-            left: 40px;
-            transform: translateY(-50%);
+            flex: 1;
+            min-width: 160px;
+            max-width: 160px;
+            margin-left: 30px;
         }
 
         .slider-container {
             position: relative;
             margin-bottom: 30px;
+            width: 140px;
         }
 
         .slider-label {
             text-align: center;
             margin-bottom: 5px;
-        }
-
-        #spawn-range, #walk-range {
-            width: 100px;
         }
 
         .slider-value {
@@ -69,7 +65,7 @@
         }
 
         .slider-value.right {
-            left: 105px;
+            left: 145px;
         }
 
         .ui-slider .ui-slider-handle:nth-of-type(1) {
@@ -94,45 +90,70 @@
             margin-bottom: 10px;
         }
 
+        .checkbox-container {
+            margin-top: 20px;
+            margin-right: 40px;
+            text-align: center;
+        }
+
+        .checkbox-container label {
+            color: white; /* or any other color that fits your design */
+            font-size: 16px; /* adjust as needed */
+        }
+
     </style>
 </head>
 <body>
-<div class="slider-wrapper">
-    <div class="restart-instruction">Press 'R' to restart</div>
-    <div class="slider-container">
-        <div class="slider-label">Spawn Range</div>
-        <div id="spawn-range"></div>
-        <div class="slider-value left">-5</div>
-        <div class="slider-value right">5</div>
+<div class="container">
+    <div class="slider-wrapper">
+        <div class="restart-instruction">Press 'R' to restart</div>
+        <div class="slider-container">
+            <div class="slider-label">Spawn Range</div>
+            <div id="spawn-range"></div>
+            <div class="slider-value left">-5</div>
+            <div class="slider-value right">5</div>
+        </div>
+        <div class="slider-container">
+            <div class="slider-label">Walk range (y)</div>
+            <div id="walk-range"></div>
+            <div class="slider-value left">-5</div>
+            <div class="slider-value right">5</div>
+        </div>
+        <div class="slider-container">
+            <div class="slider-label">Segments</div>
+            <div id="segments"></div>
+            <div class="slider-value single">0</div>
+        </div>
+        <div class="slider-container">
+            <div class="slider-label">Particles/Frame</div>
+            <div id="particlesPerFrame"></div>
+            <div class="slider-value single">0</div>
+        </div>
+        <div class="slider-container">
+            <div class="slider-label">Particle Radius</div>
+            <div id="particleRadius"></div>
+            <div class="slider-value single">0</div>
+        </div>
+        <div class="slider-container">
+            <div class="slider-label">Window Size</div>
+            <div id="windowSize"></div>
+            <div class="slider-value single">0</div>
+        </div>
+        <div class="checkbox-container">
+            <label for="drawBorderCheckbox">
+                <input type="checkbox" id="drawBorderCheckbox" name="drawBorder">
+                Draw Border (resets snowflake)
+            </label>
+        </div>
     </div>
-    <div class="slider-container">
-        <div class="slider-label">Walk range (y)</div>
-        <div id="walk-range"></div>
-        <div class="slider-value left">-5</div>
-        <div class="slider-value right">5</div>
-    </div>
-    <div class="slider-container">
-        <div class="slider-label">Segments</div>
-        <div id="segments"></div>
-        <div class="slider-value single">0</div>
-    </div>
-    <div class="slider-container">
-        <div class="slider-label">Particles/Frame</div>
-        <div id="particlesPerFrame"></div>
-        <div class="slider-value single">0</div>
-    </div>
-    <div class="slider-container">
-        <div class="slider-label">Particle Radius</div>
-        <div id="particleRadius"></div>
-        <div class="slider-value single">0</div>
+    <div class="emscripten_border">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+        <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0); color: white; display: flex; align-items: center; justify-content: center; font-size: 30px;">
+            Loading...
+        </div>
     </div>
 </div>
-<div class="emscripten_border" style="position: relative;">
-    <canvas class="emscripten" height="800" width="800" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-    <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0); color: white; display: flex; align-items: center; justify-content: center; font-size: 30px;">
-        Loading...
-    </div>
-</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -158,6 +179,7 @@
             Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
     };
+
     window.onerror = function () {
     };
 
@@ -190,6 +212,16 @@
                     } else {
                         valueDisplay.single.text(ui.value);
                         Module._sliderInput(sliderId, 0, ui.value);
+                        if (sliderId === 5 || sliderId === 2) {
+                            let newMaxValueForSpawnRange = Module._maxSpawnRange();
+                            $("#spawn-range").slider("option", "max", newMaxValueForSpawnRange);
+                            let currentLeftValue = $("#spawn-range").slider("values", 0);
+                            let currentRightValue = $("#spawn-range").slider("values", 1);
+                            $("#spawn-range").parent('.slider-container').find('.slider-value.right').text(currentRightValue);
+                            $("#spawn-range").parent('.slider-container').find('.slider-value.left').text(currentLeftValue);
+
+                            Module._sliderInput(0, currentLeftValue, currentRightValue);
+                        }
                     }
                 }
             });
@@ -202,13 +234,23 @@
             }
         }
 
-        initializeSlider("#spawn-range", 0, 0, 100, [0, 30]);
+        initializeSlider("#spawn-range", 0, 0, 115, [0, 30]);
         initializeSlider("#walk-range", 1, -10, 10, [-1, 1]);
-        initializeSlider("#segments", 2, 2, 30, [6]);
-        initializeSlider("#particlesPerFrame", 3, 1, 50, [1]);
-        initializeSlider("#particleRadius", 4, 1, 20, [2]);
+        initializeSlider("#segments", 2, 3, 30, [6]);
+        initializeSlider("#particlesPerFrame", 3, 1, 50, [2]);
+        initializeSlider("#particleRadius", 4, 2, 20, [2]);
+        initializeSlider("#windowSize", 5, 100, 1000, [400]);
     });
 
+    $(function() {
+        $('#drawBorderCheckbox').change(function() {
+            if (this.checked) {
+                Module._setDrawBorderEnabled(true);
+            } else {
+                Module._setDrawBorderEnabled(false);
+            }
+        });
+    });
 
 </script>
 {{{ SCRIPT }}}
