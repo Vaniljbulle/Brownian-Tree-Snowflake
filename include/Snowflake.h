@@ -7,7 +7,7 @@
 
 class Snowflake {
     std::unordered_set<SnowflakeParticle> particles;
-    int width, height, centerX, centerY, particlesPerFrame, particleRadius;
+    int windowSize, windowHalfSize, particlesPerFrame, particleRadius, spawnMin = 0, spawnMax = 30;
     double slope;
     bool finished = false;
 
@@ -22,22 +22,21 @@ class Snowflake {
     bool isParticleColliding(const SnowflakeParticle &particle);
 
     bool isParticleAtCenter(const SnowflakeParticle &particle) const {
-        return particle.x <= centerX;
+        return particle.x <= windowHalfSize;
     }
 
     bool isParticleAtEdge(const SnowflakeParticle &particle) {
-        return particle.x >= width - particle.radius * 2;
+        return particle.x >= windowSize - particle.radius * 2;
     }
 
     void moveParticle(SnowflakeParticle &particle);
 
 public:
-    Snowflake(int width, int height, int segments, int particleRadius, int particlesPerFrame) : width(width), height(height), particleRadius(particleRadius), particlesPerFrame(particlesPerFrame) {
-        centerX = width / 2;
-        centerY = height / 2;
+    Snowflake(int windowSize, int segments, int particleRadius, int particlesPerFrame) : particleRadius(particleRadius), particlesPerFrame(particlesPerFrame) {
+        setWindowSize(windowSize);
         setSegments(segments);
         setRandomWalkRange(-1, 1);
-        setSpawnRange(0, 30);
+        setSpawnRange(spawnMin, spawnMax);
     };
 
     bool update();
@@ -48,7 +47,9 @@ public:
     }
 
     void setSpawnRange(int min, int max) {
-        randomSpawnRange = std::uniform_int_distribution<>{centerY - max, centerY - min};
+        spawnMin = min;
+        spawnMax = max;
+        randomSpawnRange = std::uniform_int_distribution<>{windowHalfSize - max, windowHalfSize - min};
     }
 
     void setRandomWalkRange(int min, int max) {
@@ -65,6 +66,16 @@ public:
 
     void setSegments(int segments) {
         slope = tan(M_PI / segments);
+    }
+
+    float maxSpawnRange() {
+        return (slope * windowHalfSize);
+    }
+
+    void setWindowSize(int _windowSize) {
+        windowSize = _windowSize;
+        windowHalfSize = windowSize / 2;
+        setSpawnRange(spawnMin, spawnMax);
     }
 
     std::unordered_set<SnowflakeParticle>& getParticles() { return particles; }

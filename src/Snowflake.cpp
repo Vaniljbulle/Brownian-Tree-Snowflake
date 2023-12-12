@@ -5,7 +5,7 @@ bool Snowflake::update() {
 
     for (int i = 0; i < particlesPerFrame; i++) {
         if (finished) return false;
-        auto particle = SnowflakeParticle(width - particleRadius, randomSpawnRange(gen), particleRadius);
+        auto particle = SnowflakeParticle(windowSize - particleRadius, randomSpawnRange(gen), particleRadius);
         moveParticle(particle);
         addParticle(particle);
     }
@@ -20,6 +20,9 @@ bool Snowflake::isParticleColliding(const SnowflakeParticle &particle) {
         double distance = std::sqrt(std::pow(particle.x - existingParticle.x, 2) +
                                     std::pow(particle.y - existingParticle.y, 2));
 
+        // Manhattan distance
+//        double distance = std::abs(particle.x - existingParticle.x) + std::abs(particle.y - existingParticle.y);
+
         if (distance < (particle.radius + existingParticle.radius)) {
             return true;
         }
@@ -32,12 +35,12 @@ void Snowflake::moveParticle(SnowflakeParticle &particle) {
         particle.x -= 1;
         particle.y += yRandomWalkRange(gen);
 
-        int upperBoundaryY = centerY + slope * (centerX - particle.x);
-        //int lowerBoundaryY = centerY - slope * (centerX - particle.x);
+        int upperBoundaryY = windowHalfSize + slope * (windowHalfSize - particle.x);
+        //int lowerBoundaryY = windowHalfSize - slope * (windowHalfSize - particle.x);
         if (particle.y < upperBoundaryY) {
             particle.y = upperBoundaryY + particleRadius;
-        } else if (particle.y > centerY) {
-            particle.y = centerY - particleRadius;
+        } else if (particle.y > windowHalfSize) {
+            particle.y = windowHalfSize - particleRadius;
         }
 
 //        else if (particle.y > lowerBoundaryY) {
