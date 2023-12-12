@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-store" />
     <title>Brownian Tree Snowflake Simulation</title>
     <style>
         body {
@@ -90,17 +91,6 @@
             margin-bottom: 10px;
         }
 
-        .checkbox-container {
-            margin-top: 20px;
-            margin-right: 40px;
-            text-align: center;
-        }
-
-        .checkbox-container label {
-            color: white; /* or any other color that fits your design */
-            font-size: 16px; /* adjust as needed */
-        }
-
     </style>
 </head>
 <body>
@@ -138,12 +128,6 @@
             <div class="slider-label">Window Size</div>
             <div id="windowSize"></div>
             <div class="slider-value single">0</div>
-        </div>
-        <div class="checkbox-container">
-            <label for="drawBorderCheckbox">
-                <input type="checkbox" id="drawBorderCheckbox" name="drawBorder">
-                Draw Border (resets snowflake)
-            </label>
         </div>
     </div>
     <div class="emscripten_border">
@@ -240,16 +224,6 @@
         initializeSlider("#particlesPerFrame", 3, 1, 50, [2]);
         initializeSlider("#particleRadius", 4, 2, 20, [2]);
         initializeSlider("#windowSize", 5, 100, 1000, [400]);
-    });
-
-    $(function() {
-        $('#drawBorderCheckbox').change(function() {
-            if (this.checked) {
-                Module._setDrawBorderEnabled(true);
-            } else {
-                Module._setDrawBorderEnabled(false);
-            }
-        });
     });
 
 </script>

@@ -31,7 +31,6 @@ void SDLWindow::render(std::unordered_set<SnowflakeParticle>& particles) {
     SDL_SetRenderTarget(renderer, screenTexture);
 
     clear();
-    if (drawBorderEnabled) drawBorder();
 
     for (int i = 0; i < segments; i++) {
         int angle = (360 / segments) * i;
@@ -51,7 +50,7 @@ void SDLWindow::render(std::unordered_set<SnowflakeParticle>& particles) {
 void SDLWindow::render() {
     SDL_SetRenderTarget(renderer, screenTexture);
 
-    if (drawBorderEnabled) drawBorder();
+    drawBorder();
 
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderCopy(renderer, screenTexture, nullptr, nullptr);

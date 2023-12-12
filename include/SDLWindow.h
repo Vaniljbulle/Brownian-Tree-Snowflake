@@ -12,7 +12,6 @@ class SDLWindow {
 
     int windowSize, windowHalfSize, segments;
     const float oneDegree = M_PI / 180.0f;
-    bool drawBorderEnabled = false;
 
     void drawFilledCircle(int centerX, int centerY, int radius);
 
@@ -40,11 +39,6 @@ public:
     }
 
     void setWindowSize(int _windowSize);
-
-    void setDrawBorderEnabled(bool enabled) {
-        drawBorderEnabled = enabled;
-        render();
-    }
 };
 
 

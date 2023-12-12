@@ -78,18 +78,13 @@ void sliderInput(int id, int min, int max) {
     } else if (id == SLIDER_ID_WINDOW_RESIZE && max >= WINDOW_SIZE_MIN && max <= WINDOW_SIZE_MAX) {
         window.setWindowSize(max);
         snowflakeLogic.setWindowSize(max);
-        reset();
+        //reset();
     }
 }
 
 EMSCRIPTEN_KEEPALIVE
 int maxSpawnRange(){
     return snowflakeLogic.maxSpawnRange();
-}
-
-EMSCRIPTEN_KEEPALIVE
-void setDrawBorderEnabled(bool enabled) {
-    window.setDrawBorderEnabled(enabled);
 }
 }
 
