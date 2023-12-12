@@ -26,7 +26,9 @@ set(EM_FLAGS "${EM_FLAGS} -s USE_SDL=2 -s USE_SDL_TTF=2 -s ALLOW_MEMORY_GROWTH=1
 add_executable(BrownianTreeSnowflake
         src/main.cpp
         src/Snowflake.cpp
-        include/SnowflakeParticle.h)
+        include/SnowflakeParticle.h
+        src/SDLWindow.cpp
+        src/SDLWindow.h)
 
 target_compile_features(BrownianTreeSnowflake PRIVATE cxx_std_17)
 set_target_properties(BrownianTreeSnowflake PROPERTIES LINK_FLAGS ${EM_FLAGS})
